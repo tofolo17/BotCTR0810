@@ -2,6 +2,10 @@ import random
 
 from discord.ext import commands
 
+from cogs.long_strings.values import Info
+
+info = Info()
+
 
 class Randomness(commands.Cog, name="Aleatoriedades"):
     def __init__(self, client):
@@ -11,11 +15,11 @@ class Randomness(commands.Cog, name="Aleatoriedades"):
     async def on_ready(self):
         print(f'{self.__class__.__name__} Cog foi carregado.')
 
-    @commands.command(brief="Retorna a latência do nosso bot", description="Nadinha.")
+    @commands.command(brief=info.ping.brief, description=info.ping.description)
     async def ping(self, ctx):
         await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
 
-    @commands.command(aliases=["8ball"], brief="Responde de forma duvidosa a sua pergunta.", description="Nadinha.")
+    @commands.command(aliases=["8ball"], brief=info.eightball.brief, description=info.eightball.description)
     async def eightball(self, ctx, *, question):
         responses = [
             "It is certain.",
@@ -40,11 +44,7 @@ class Randomness(commands.Cog, name="Aleatoriedades"):
             "Very doubtful."]
         await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
 
-    @commands.command(
-        brief="Limpa as mensagens do canal onde é chamado.",
-        description="```!clear [quantidade de mensagens]``` % Para limpar uma quantidade específica"
-                    " de mensagens:\n```!clear 6```\nPara limpar todo o canal:\n```!clear```"
-    )
+    @commands.command(brief=info.clear.brief, description=info.clear.description)
     async def clear(self, ctx, number=None):
         def check_func(msg):
             return not msg.pinned
