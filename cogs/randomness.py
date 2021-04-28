@@ -22,26 +22,27 @@ class Randomness(commands.Cog, name="Aleatoriedades"):
     @commands.command(aliases=["8ball"], brief=info.eightball.brief, description=info.eightball.description)
     async def eightball(self, ctx, *, question):
         responses = [
-            "It is certain.",
-            "It is decidedly so.",
-            "Without a doubt.",
-            "Yes – definitely.",
-            "You may rely on it.",
-            "As I see it, yes.",
-            "Most likely.",
-            "Outlook good.",
-            "Yes.",
-            "Signs point to yes.",
-            "Reply hazy, try again.",
-            "Ask again later.",
-            "Better not tell you now.",
-            "Cannot predict now.",
-            "Concentrate and ask again.",
-            "Don't count on it.",
-            "My reply is no.",
-            "My sources say no.",
-            "Outlook not so good.",
-            "Very doubtful."]
+            'Sim.',
+            'É certo.',
+            'Sem dúvida.',
+            'Fé que sim.',
+            'Com certeza.',
+            'Provavelmente.',
+            'A meu ver, sim.',
+            'Provável que não.',
+            'Não conte com isso.',
+            'Não, de jeito nenhum.',
+            'Tenho minhas dúvidas.',
+            'Sim - definitivamente.',
+            'Sinais apontam que sim.',
+            'Você pode contar com isso.',
+            'Meus contatos dizem que não.',
+            'Concentre-se e tente de novo.',
+            'Olha... Melhor eu ficar quieto.',
+            'Pergunte-me depois, não queto te chatear.',
+            'Acho melhor você não receber uma resposta para essa pergunta...',
+            'Não posso fazer advinhações sobre isso... Pergunta profunda demais para mim.'
+        ]
         await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
 
     @commands.command(brief=info.clear.brief, description=info.clear.description)
