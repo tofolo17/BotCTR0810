@@ -19,13 +19,36 @@ class Eightball:
         self.brief = "Responde a sua pergunta de forma duvidosa."
         self.description = "Responde perguntas de advinhação, como o brinquedo Magic 8Ball, inventado nos EUA na" \
                            " década de 50. % ```!8ball eu vou ser rico?``` ```!eightball o Gilson é o cara?```"
+        self.responses = [
+            'Sim.',
+            'É certo.',
+            'Sem dúvida.',
+            'Fé que sim.',
+            'Com certeza.',
+            'Provavelmente.',
+            'A meu ver, sim.',
+            'Provável que não.',
+            'Não conte com isso.',
+            'Não, de jeito nenhum.',
+            'Tenho minhas dúvidas.',
+            'Sim - definitivamente.',
+            'Sinais apontam que sim.',
+            'Você pode contar com isso.',
+            'Meus contatos dizem que não.',
+            'Concentre-se e tente de novo.',
+            'Olha... Melhor eu ficar quieto.',
+            'Pergunte-me depois, não queto te chatear.',
+            'Acho melhor você não receber uma resposta para essa pergunta...',
+            'Não posso fazer advinhações sobre isso... Pergunta profunda demais para mim.'
+        ]
 
 
 class Clear:
     def __init__(self):
         self.brief = "Limpa as mensagens do canal, exceto as fixadas."
-        self.description = "Apaga as mensagens do canal onde foi chamado, exeto as que foram fixadas. Para apagar to" \
-                           "das as mensagens, basta não acrescentar nenhum parâmetro. % ```!clear 10``` ```!clear```"
+        self.description = "Apaga as mensagens do canal onde foi chamado, exceto as que foram fixadas. O valor" \
+                           " padrão é cinco. Para apagar to das as mensagens, basta usar `all` como parâmetro. %" \
+                           " ```!clear``` ```!clear 10``` ```!clear all```"
 
 
 class Status:

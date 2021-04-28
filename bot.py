@@ -4,7 +4,7 @@ import os
 from discord import Embed
 from discord.ext import commands
 
-from cogs.long_strings.values import *
+from cogs.useful.classes import *
 
 client = commands.Bot(command_prefix="!")
 info = Info()
