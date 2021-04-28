@@ -1,12 +1,21 @@
+import asyncio
 import os
 
-import discord
 from discord import Embed
 from discord.ext import commands
 
-from cogs.long_strings.values import ending_note
+from cogs.long_strings.values import *
 
 client = commands.Bot(command_prefix="!")
+info = Info()
+
+
+@client.event
+async def on_ready():
+    while True:
+        activity = info.status.get_status()
+        await client.change_presence(status=discord.Status.online, activity=activity)
+        await asyncio.sleep(30)
 
 
 class MyHelp(commands.HelpCommand):
