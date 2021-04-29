@@ -22,7 +22,7 @@ class Randomness(commands.Cog, name="Aleatoriedades"):
     @commands.command(aliases=["8ball"], brief=info.eightball.brief, description=info.eightball.description)
     async def eightball(self, ctx, *, question):
         responses = info.eightball.responses
-        await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
+        await ctx.send(f'Pergunta: {question}\nResposta: {random.choice(responses)}')
 
     @commands.command(brief=info.clear.brief, description=info.clear.description)
     async def clear(self, ctx, number="5"):

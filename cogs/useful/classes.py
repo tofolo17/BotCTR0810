@@ -80,9 +80,9 @@ class Status:
         active_status = random.choice(list(self.data.keys()))
         status_value = self.data[active_status][random.randint(0, len(self.data[active_status]) - 1)]
         if active_status == "playing":
-            return discord.Game(name=f'🎮 {status_value}')
+            return discord.Game(name=f'🎮 {status_value} || !help')
         elif active_status == "listening":
-            return discord.Activity(type=discord.ActivityType.listening, name=f'🎶 {status_value}')
+            return discord.Activity(type=discord.ActivityType.listening, name=f'🎶 {status_value} || !help')
 
 
 class Info:
