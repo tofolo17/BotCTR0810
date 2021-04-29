@@ -17,7 +17,7 @@ class Profile(commands.Cog, name="Criação de Card"):
     async def on_ready(self):
         print(f'{self.__class__.__name__} Cog foi carregado.')
 
-    @commands.command(brief="Ainda em desenvolvimento.", description="Ainda em desenvolvimento.")
+    @commands.command(brief="Ainda em desenvolvimento.", description="Ainda em desenvolvimento. % ```!card```")
     async def card(self, ctx):
         def check_func(msg):
             return not msg.pinned

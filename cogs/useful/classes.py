@@ -64,7 +64,12 @@ class Status:
                 "Hollow Knight",
                 "The Legend of Zelda",
                 "Genshin Impact",
-                "COD Zombies"
+                "COD Zombies",
+                "Minecraft",
+                "Garticphone",
+                "Metal Gear",
+                "Hotline Miami",
+                "Stardew Valley"
             ],
             "listening": [
                 "A trilha sonora de Undertale",
