@@ -1,9 +1,8 @@
 import asyncio
 import os
 
-from discord import Embed
+from discord import Embed, Colour
 from discord.ext import commands
-from discord.utils import get
 
 from cogs.useful.classes import *
 
@@ -28,6 +27,7 @@ async def on_command_error(ctx, error):
         await ctx.send('Comando inválido. Bip. Bop.')
 
 
+"""
 @client.event
 async def on_raw_reaction_add(payload=None):
     await asyncio.sleep(2)
@@ -50,6 +50,32 @@ async def on_raw_reaction_remove(payload=None):
         r_role = get(guild.roles, name='Arte')
         if payload is not None:
             await member.remove_roles(r_role)
+"""
+
+
+# Adicionar permissões para uso
+@client.command()
+async def cc(ctx, r, g, b, name, *, title):
+    guild = ctx.guild
+    perms = guild.default_role.permissions
+    new_roles = []
+    await guild.create_role(name=name, colour=Colour.from_rgb(int(r), int(g), int(b)), permissions=perms)
+    for i in ["Interesse", "Básico", "Intermediário", "Avançado"]:
+        role = await guild.create_role(name=i, colour=Colour.from_rgb(int(r), int(g), int(b)), permissions=perms)
+        new_roles.append(role)
+    packed = int('%02x%02x%02x' % (int(r), int(g), int(b)), 16)
+    await ctx.send(f'.embed {{"color": {packed}, "title": "{title}"}}')
+    await ctx.send(f".message <id>")
+    emojis = ['📕', '📗', '📘', '📙']
+    for emoji in emojis:
+        await ctx.send(f".toggle {emoji} {new_roles[emojis.index(emoji)].id}")
+
+
+@client.command()
+async def cr(ctx, r, g, b):
+    for role in ctx.message.guild.roles:
+        if role.color == Colour.from_rgb(int(r), int(g), int(b)):
+            await role.delete()
 
 
 @client.command()
