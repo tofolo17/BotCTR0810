@@ -7,7 +7,7 @@ from cogs.useful.classes import Info
 info = Info()
 
 
-class Randomness(commands.Cog, name="Aleatoriedades"):
+class Randomness(commands.Cog, name="Comandos aleatórios"):
     def __init__(self, client):
         self.client = client
 

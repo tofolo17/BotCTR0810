@@ -19,8 +19,8 @@ class Profile(commands.Cog, name="Criação de Card"):
 
     @commands.command(brief="Ainda em desenvolvimento.", description="Ainda em desenvolvimento. % ```!card```")
     async def card(self, ctx):
-        def check_func(msg):
-            return not msg.pinned
+        def check(msg):
+            return msg.author == ctx.author and msg.channel == ctx.channel
 
         if ctx.message.channel.name == "👾│card":
             guild = ctx.message.guild
@@ -40,18 +40,24 @@ class Profile(commands.Cog, name="Criação de Card"):
                     overwrites=overwrites
                 )
                 await ctx.send(f"Dirija-se ao canal `{new_channel.name}` para criar seu card.")
+
+                # Nickname
+                embed = discord.Embed(
+                    title="Nickname",
+                    description="Envie neste chat seu nome de usuário ou apelido \n\n"
+                                "Você tem dois minutos para responder",
+                    color=discord.Color.random()
+                )
+                await new_channel.send(embed=embed)
+                try:
+                    nickname = await self.client.wait_for("message", check=check, timeout=10)
+                    await new_channel.purge()
+                except asyncio.TimeoutError:
+                    await new_channel.delete()
             else:
                 await ctx.send(f"Já existe um canal para você. Dirija-se a ele.")
-            await asyncio.sleep(30)
-            await ctx.channel.purge(check=check_func)
         else:
             await ctx.send("Comando em desenvolvimento. Volte mais tarde.")
-
-    """
-    @commands.command()
-    async def teste(self, ctx):
-        pass
-    """
 
 
 def setup(client):

@@ -2,7 +2,7 @@ import random
 
 import discord
 
-ending_note = "Para mais informações, escreva `!help <comando>`.\n" \
+ending_note = "Para mais informações, escreva !help <comando>.\n" \
               "Obs.: como ainda não hospedamos o bot, ele não funciona" \
               " a todo instante. Verifique se o mesmo está online."
 
