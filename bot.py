@@ -25,6 +25,8 @@ async def on_ready():
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('Comando inválido. Bip. Bop.')
+    elif isinstance(error, commands.MissingPermissions):
+        await ctx.send('Lhe falta permissões!')
 
 
 """
@@ -55,6 +57,7 @@ async def on_raw_reaction_remove(payload=None):
 
 # Adicionar permissões para uso
 @client.command()
+@commands.has_permissions(manage_roles=True)
 async def cc(ctx, r, g, b, name, *, title):
     guild = ctx.guild
     perms = guild.default_role.permissions
@@ -72,6 +75,7 @@ async def cc(ctx, r, g, b, name, *, title):
 
 
 @client.command()
+@commands.has_permissions(manage_roles=True)
 async def cr(ctx, r, g, b):
     for role in ctx.message.guild.roles:
         if role.color == Colour.from_rgb(int(r), int(g), int(b)):
@@ -79,6 +83,7 @@ async def cr(ctx, r, g, b):
 
 
 @client.command()
+@commands.has_permissions(manage_roles=True)
 async def embed(ctx):
     level_embed = discord.Embed(
         title="Níveis e respectivas descrições",
