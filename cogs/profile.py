@@ -52,8 +52,10 @@ class Profile(commands.Cog, name="Criação de Card"):
                 try:
                     nickname = await self.client.wait_for("message", check=check, timeout=10)
                     await new_channel.purge()
+                    print(nickname)
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+
             else:
                 await ctx.send(f"Já existe um canal para você. Dirija-se a ele.")
         else:

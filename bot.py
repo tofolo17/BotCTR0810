@@ -24,59 +24,42 @@ async def on_ready():
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send('Comando inválido. Bip. Bop.')
+        await ctx.send('Comando inexistente!')
     elif isinstance(error, commands.MissingPermissions):
         await ctx.send('Lhe falta permissões!')
 
 
-"""
 @client.event
 async def on_raw_reaction_add(payload=None):
-    await asyncio.sleep(2)
     guild = client.get_guild(payload.guild_id)
-
-    # Arte
-    if payload.message_id == 838116975128608788:
-        a_role = get(guild.roles, name='Arte')
-        if payload is not None:
-            await payload.member.add_roles(a_role)
-
-
-@client.event
-async def on_raw_reaction_remove(payload=None):
-    guild = client.get_guild(payload.guild_id)
-    member = await guild.fetch_member(payload.user_id)
-
-    # Arte
-    if payload.message_id == 838116975128608788:
-        r_role = get(guild.roles, name='Arte')
-        if payload is not None:
-            await member.remove_roles(r_role)
-"""
+    channel = client.get_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+    for role in guild.roles:
+        if role.colour == message.embeds[0].colour:
+            print(role.name)
+    print("Alguém reagiu!")
 
 
-# Adicionar permissões para uso
 @client.command()
 @commands.has_permissions(manage_roles=True)
-async def cc(ctx, r, g, b, name, *, title):
+async def cr(ctx, red, green, blue, name, create="False"):
     guild = ctx.guild
     perms = guild.default_role.permissions
-    new_roles = []
-    await guild.create_role(name=name, colour=Colour.from_rgb(int(r), int(g), int(b)), permissions=perms)
-    for i in ["Interesse", "Básico", "Intermediário", "Avançado"]:
-        role = await guild.create_role(name=i, colour=Colour.from_rgb(int(r), int(g), int(b)), permissions=perms)
-        new_roles.append(role)
-    packed = int('%02x%02x%02x' % (int(r), int(g), int(b)), 16)
-    await ctx.send(f'.embed {{"color": {packed}, "title": "{title}"}}')
-    await ctx.send(f".message <id>")
-    emojis = ['📕', '📗', '📘', '📙']
-    for emoji in emojis:
-        await ctx.send(f".toggle {emoji} {new_roles[emojis.index(emoji)].id}")
+    color = Colour.from_rgb(int(red), int(green), int(blue))
+    for i in [name, "Interesse", "Básico", "Intermediário", "Avançado"]:
+        if create == "True":
+            await guild.create_role(name=i, colour=color, permissions=perms)
+        else:
+            pass
+    message = await ctx.send(embed=Embed(title=name, color=color))
+    emoji_list = ["📘", "📗", "📙", "📕"]
+    for emoji in emoji_list:
+        await message.add_reaction(emoji)
 
 
 @client.command()
 @commands.has_permissions(manage_roles=True)
-async def cr(ctx, r, g, b):
+async def dr(ctx, r, g, b):
     for role in ctx.message.guild.roles:
         if role.color == Colour.from_rgb(int(r), int(g), int(b)):
             await role.delete()
@@ -128,7 +111,7 @@ class MyHelp(commands.HelpCommand):
                 help_embed.add_field(name=cog_name, value="\n".join(command_signatures), inline=False)
         help_embed.set_footer(text=ending_note)
         channel = self.get_destination()
-        await channel.send(embed=help_embed)  # delete_after=seconds
+        await channel.send(embed=help_embed)
 
     async def send_command_help(self, command):
         command_help_embed = Embed(title=self.get_command_signature(command), color=discord.Color.random())
