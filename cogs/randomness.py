@@ -7,10 +7,6 @@ class Randomness(commands.Cog, name="Comandos aleatórios"):
     def __init__(self, client):
         self.client = client
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f'{self.__class__.__name__} Cog foi carregado.')
-
     @commands.command(
         brief="Retorna a latência do nosso bot.",
         description='Responde "Pong!" seguido da latência (ou ping) do bot em milissegundos. % ```!ping```'

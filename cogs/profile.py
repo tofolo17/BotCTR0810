@@ -10,24 +10,25 @@ class Profile(commands.Cog, name="Criação de Card"):
         self.client = client
 
     @commands.command(brief="Ainda em desenvolvimento.", description="Ainda em desenvolvimento. % ```!card```")
-    async def card(self, ctx):
+    async def card(self, ctx):  # Algo está dando errado
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.channel
 
         if ctx.message.channel.name == "👾│card":
             guild = ctx.message.guild
             member = ctx.message.author
+            category = ctx.message.channel.category
             new_channel_name = f"👤│{member.name}{member.discriminator}"
             if discord.utils.get(guild.text_channels, name=new_channel_name) is None:
                 overwrites = {
                     guild.default_role: discord.PermissionOverwrite(read_messages=False),
                     get(guild.roles, name="Admin"): discord.PermissionOverwrite(read_messages=True),
-                    get(guild.roles, name="Robôs"): discord.PermissionOverwrite(read_messages=True),
+                    get(guild.roles, name="🤖  Robôs"): discord.PermissionOverwrite(read_messages=True),
                     member: discord.PermissionOverwrite(read_messages=True)
                 }
                 new_channel = await guild.create_text_channel(
-                    new_channel_name,
-                    category=ctx.message.channel.category,
+                    name=new_channel_name,
+                    category=category,
                     overwrites=overwrites
                 )
                 await ctx.send(f"Dirija-se ao canal `{new_channel.name}` para criar seu card.")
