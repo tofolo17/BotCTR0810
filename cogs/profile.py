@@ -4,18 +4,10 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 
-from cogs.useful.classes import Info
-
-info = Info()
-
 
 class Profile(commands.Cog, name="Criação de Card"):
     def __init__(self, client):
         self.client = client
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f'{self.__class__.__name__} Cog foi carregado.')
 
     @commands.command(brief="Ainda em desenvolvimento.", description="Ainda em desenvolvimento. % ```!card```")
     async def card(self, ctx):
@@ -25,7 +17,6 @@ class Profile(commands.Cog, name="Criação de Card"):
         if ctx.message.channel.name == "👾│card":
             guild = ctx.message.guild
             member = ctx.message.author
-            category = ctx.message.channel.category
             new_channel_name = f"👤│{member.name}{member.discriminator}"
             if discord.utils.get(guild.text_channels, name=new_channel_name) is None:
                 overwrites = {
@@ -36,19 +27,19 @@ class Profile(commands.Cog, name="Criação de Card"):
                 }
                 new_channel = await guild.create_text_channel(
                     new_channel_name,
-                    category=category,
+                    category=ctx.message.channel.category,
                     overwrites=overwrites
                 )
                 await ctx.send(f"Dirija-se ao canal `{new_channel.name}` para criar seu card.")
 
                 # Nickname
-                embed = discord.Embed(
+                nickname_embed = discord.Embed(
                     title="Nickname",
                     description="Envie neste chat seu nome de usuário ou apelido \n\n"
                                 "Você tem dois minutos para responder",
                     color=discord.Color.random()
                 )
-                await new_channel.send(embed=embed)
+                await new_channel.send(embed=nickname_embed)
                 try:
                     nickname = await self.client.wait_for("message", check=check, timeout=10)
                     await new_channel.purge()
