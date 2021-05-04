@@ -31,13 +31,35 @@ async def on_command_error(ctx, error):
 
 @client.event
 async def on_raw_reaction_add(payload=None):
-    guild = client.get_guild(payload.guild_id)
+    member = payload.member
     channel = client.get_channel(payload.channel_id)
-    message = await channel.fetch_message(payload.message_id)
-    for role in guild.roles:
-        if role.colour == message.embeds[0].colour:
-            print(role.name)
-    print("Alguém reagiu!")
+    if channel.name == "🆔│cargos" and not member.bot:
+        emoji = payload.emoji.name
+        emoji_list = ["📕", "📙", "📗", "📘"]
+        guild = client.get_guild(payload.guild_id)
+        message = await channel.fetch_message(payload.message_id)
+        role_list = [role for role in guild.roles if role.colour == message.embeds[0].colour]
+        for role in member.roles:
+            if role in role_list[:-1]:
+                await member.remove_roles(role)
+                await message.remove_reaction(emoji_list[role_list.index(role)], member)
+        emoji_index = emoji_list.index(emoji)
+        await member.add_roles(role_list[-1])
+        await member.add_roles(role_list[emoji_index])
+
+
+@client.event
+async def on_raw_reaction_remove(payload=None):
+    channel = client.get_channel(payload.channel_id)
+    if channel.name == "🆔│cargos":
+        guild = client.get_guild(payload.guild_id)
+        member = await guild.fetch_member(payload.user_id)
+        message = await channel.fetch_message(payload.message_id)
+        reactions = [reaction.count for reaction in message.reactions]
+        if sum(reactions) >= 4:
+            for role in guild.roles:
+                if role.colour == message.embeds[0].colour:
+                    await member.remove_roles(role)
 
 
 @client.command()
