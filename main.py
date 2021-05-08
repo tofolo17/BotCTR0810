@@ -1,9 +1,11 @@
 import asyncio
 import os
+from io import BytesIO
 from random import choice, randint
 
-from discord import Game, Activity, ActivityType, Status, Intents, Embed, Color, Colour
+from discord import Game, Activity, ActivityType, Status, Intents, Embed, Color, Colour, File
 from discord.ext import commands
+from discord.utils import get
 
 intents = Intents.default()
 intents.guild_messages = True
@@ -69,12 +71,16 @@ async def on_command_error(ctx, error):
 @client.event
 async def on_raw_reaction_add(payload=None):
     member = payload.member
+    guild = client.get_guild(payload.guild_id)
     channel = client.get_channel(payload.channel_id)
-    if channel.name == "🆔│cargos" and not member.bot:
+    if channel.name == "🆔│classes" and not member.bot:
         message = await channel.fetch_message(payload.message_id)
+        member_roles = [role for role in member.roles]
         guild_roles = [
-            role for role in client.get_guild(payload.guild_id).roles if role.colour == message.embeds[0].colour
+            role for role in guild.roles if role.colour == message.embeds[0].colour
         ]
+        if len(member_roles) == 1:
+            await member.add_roles(get(guild.roles, id=839136218436075558))
         if payload is not None:
             await member.add_roles(guild_roles[-1])
             if payload.emoji.name == "📕":
@@ -92,12 +98,12 @@ async def on_raw_reaction_remove(payload=None):
     guild = client.get_guild(payload.guild_id)
     channel = client.get_channel(payload.channel_id)
     member = await guild.fetch_member(payload.user_id)
-    if channel.name == "🆔│cargos":
+    if channel.name == "🆔│classes":
         message = await channel.fetch_message(payload.message_id)
         guild_roles = [role for role in guild.roles if role.colour == message.embeds[0].colour]
-        member_roles = [role for role in member.roles if role.colour == message.embeds[0].colour]
+        colored_member_roles = [role for role in member.roles if role.colour == message.embeds[0].colour]
         if payload is not None:
-            if len(member_roles) == 2:
+            if len(colored_member_roles) == 2:
                 await member.remove_roles(guild_roles[-1])
             if payload.emoji.name == "📕":
                 await member.remove_roles(guild_roles[0])
@@ -107,6 +113,19 @@ async def on_raw_reaction_remove(payload=None):
                 await member.remove_roles(guild_roles[2])
             else:
                 await member.remove_roles(guild_roles[3])
+        member = await guild.fetch_member(payload.user_id)
+        if len(member.roles) == 2:
+            await member.remove_roles(get(guild.roles, id=839136218436075558))
+
+
+@client.command()
+async def resend(ctx):
+    files = []
+    for file in ctx.message.attachments:
+        fp = BytesIO()
+        await file.save(fp)
+        files.append(File(fp, filename=file.filename, spoiler=file.is_spoiler()))
+    await ctx.send(files=files)
 
 
 @client.command()
@@ -162,7 +181,7 @@ async def cr(ctx, red, green, blue, name, create="False"):
 @client.command()
 @commands.has_permissions(manage_roles=True)
 async def dr(ctx, r, g, b):
-    for role in ctx.message.guild.roles:
+    for role in ctx.guild.roles:
         if role.color == Colour.from_rgb(int(r), int(g), int(b)):
             await role.delete()
 
@@ -194,4 +213,6 @@ for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
         client.load_extension(f'cogs.{filename[:-3]}')
 
-client.run("ODM2NjY0MzI5NTk5MTg4OTkz.YIhSYA.1iBV5E44o5_qdud2ZfVQZ33QscU")  # os.environ.get('BOT_TOKEN')
+client.run("ODM5NjYwMjIzMTY5MDM2Mjkw.YJM4hQ.bUcYpvAKgwATEKL2bPsxTYS4pdk")  # os.environ.get('BOT_TOKEN')
+
+#  ODM2NjY0MzI5NTk5MTg4OTkz.YIhSYA.1iBV5E44o5_qdud2ZfVQZ33QscU

@@ -17,7 +17,7 @@ class Randomness(commands.Cog, name="Comandos aleatórios"):
     @commands.command(
         aliases=["8ball"],
         brief="Responde a sua pergunta de forma duvidosa.",
-        description="Responde perguntas de advinhação, como o brinquedo Magic 8Ball, inventado nos EUA na década de "
+        description="Responde perguntas de adivinhação, como o brinquedo Magic 8Ball, inventado nos EUA na década de "
                     "50. % ```!8ball eu vou ser rico?``` ```!eightball o Gilson é o cara?```"
     )
     async def eightball(self, ctx, *, question):
@@ -41,7 +41,7 @@ class Randomness(commands.Cog, name="Comandos aleatórios"):
             'Olha... Melhor eu ficar quieto.',
             'Pergunte-me depois, não queto te chatear.',
             'Acho melhor você não receber uma resposta para essa pergunta...',
-            'Não posso fazer advinhações sobre isso... Pergunta profunda demais para mim.'
+            'Não posso fazer adivinhações sobre isso... Pergunta profunda demais para mim.'
         ]
         await ctx.send(f'Pergunta: {question}\nResposta: {random.choice(responses)}')
 
