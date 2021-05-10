@@ -118,7 +118,32 @@ async def on_raw_reaction_remove(payload=None):
             await member.remove_roles(get(guild.roles, id=839136218436075558))
 
 
+# -- Estudos e testes --
 @client.command()
+@commands.has_permissions(manage_roles=True)
+async def join(ctx):
+    guild = ctx.guild
+    vc = guild.voice_channels[0]
+    await vc.connect()
+
+
+@client.command()
+@commands.has_permissions(manage_roles=True)
+async def leave(ctx):
+    vc = ctx.voice_client
+    await vc.disconnect()
+
+
+@client.command()
+@commands.has_permissions(manage_roles=True)
+async def play(ctx, url):
+    vc = ctx.voice_client
+    player = await vc.create_ytdl_player(url)
+    player.start()
+
+
+@client.command()
+@commands.has_permissions(manage_roles=True)
 async def resend(ctx):
     files = []
     for file in ctx.message.attachments:
@@ -128,39 +153,7 @@ async def resend(ctx):
     await ctx.send(files=files)
 
 
-@client.command()
-@commands.has_permissions(manage_roles=True)
-async def embed(ctx):
-    level_embed = Embed(
-        title="Níveis e respectivas descrições",
-        description="Para declarar a sua classe, atente-se aos níveis propostos",
-        color=Color.random()
-    )
-    level_embed.add_field(
-        name="📘 Interesse",
-        value="Entendo pouco ou nada sobre, mas quero aprender",
-        inline=False
-    )
-    level_embed.add_field(
-        name="📗 Básico",
-        value="Estou dando os meus primeiros passos na área e já possuo certo conhecimento",
-        inline=False
-    )
-    level_embed.add_field(
-        name="📙 Intermediário",
-        value="Tenho uma base concisa e já posso ampliar meus conhecimentos de forma independente",
-        inline=False
-    )
-    level_embed.add_field(
-        name="📕 Avançado",
-        value="Domino o básico e algumas vertentes intermediárias / avançadas",
-        inline=False
-    )
-    level_embed.set_footer(
-        text="Obs.: seja qual for seu nível, saiba que sempre aprenderemos com o próximo. "
-             "Vamos fazer disso uma troca sincera e proveitosa."
-    )
-    await ctx.message.channel.send(embed=level_embed)
+# ----------------------
 
 
 @client.command()
@@ -213,6 +206,4 @@ for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
         client.load_extension(f'cogs.{filename[:-3]}')
 
-client.run("ODM5NjYwMjIzMTY5MDM2Mjkw.YJM4hQ.bUcYpvAKgwATEKL2bPsxTYS4pdk")  # os.environ.get('BOT_TOKEN')
-
-#  ODM2NjY0MzI5NTk5MTg4OTkz.YIhSYA.1iBV5E44o5_qdud2ZfVQZ33QscU
+client.run("ODM5NjYwMjIzMTY5MDM2Mjkw.YJM4hQ.bUcYpvAKgwATEKL2bPsxTYS4pdk")

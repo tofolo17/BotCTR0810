@@ -51,6 +51,7 @@ class Randomness(commands.Cog, name="Comandos aleatórios"):
                     "cinco. Para apagar to das as mensagens, basta usar `all` como parâmetro. % ```!clear``` "
                     "```!clear 10``` ```!clear all``` "
     )
+    @commands.has_permissions(manage_roles=True)
     async def clear(self, ctx, number="5"):
         def check_func(msg):
             return not msg.pinned
