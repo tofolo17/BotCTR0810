@@ -102,9 +102,13 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
 
+                await asyncio.sleep(2)
+
                 # Classes
                 author_info.append(
                     [role.mention for role in member.roles if role.name not in ["Admin", "@everyone"]])
+
+                await asyncio.sleep(2)
 
                 # Avatar
                 avatar_embed = Embed(
@@ -122,6 +126,8 @@ class Profile(commands.Cog, name="Criação de Card"):
                 except asyncio.TimeoutError:
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
+
+                await asyncio.sleep(2)
 
                 # Habilidades de classe
                 power_embed = Embed(
@@ -143,6 +149,8 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
 
+                await asyncio.sleep(2)
+
                 # Habilidades especiais
                 specific_power_embed = Embed(
                     title="🏆 Poderes especiais (4/8) 🏆",
@@ -163,6 +171,8 @@ class Profile(commands.Cog, name="Criação de Card"):
                 except asyncio.TimeoutError:
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
+
+                await asyncio.sleep(2)
 
                 # Interesses de aprendizado
                 interests_embed = Embed(
@@ -186,6 +196,8 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
 
+                await asyncio.sleep(2)
+
                 # Interesses temáticos
                 themes_embed = Embed(
                     title="🎲 Interesses temáticos (6/8) 🎲",
@@ -205,13 +217,14 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
 
+                await asyncio.sleep(2)
+
                 # Referências artísticas
                 reference_embed = Embed(
                     title="🎭 Referências artísticas (7/8) 🎭",
                     description='Envie a este chat quaisquer referências artísticas de seu gosto. '
                                 'O desenvolvedor desse bot provavelmente teria Paramore incluído '
-                                'na resposta.\n\nCaso você possua gostos MUITO peculiares e tenha '
-                                'vergonha de apresentá-los, responda com "0".',
+                                'na resposta.\n\nCaso você não queira apresentá-los, responda com "0".',
                     color=Color.random()
                 )
                 reference_embed.set_footer(text=footer_text)
@@ -224,6 +237,8 @@ class Profile(commands.Cog, name="Criação de Card"):
                 except asyncio.TimeoutError:
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
+
+                await asyncio.sleep(2)
 
                 # Redes sociais
                 social_embed = Embed(
@@ -244,6 +259,8 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.delete()
                     await ctx.channel.purge(check=check2)
                 await new_channel.delete()
+
+                await asyncio.sleep(2)
 
                 # Card do jogador
                 player_embed = Embed(

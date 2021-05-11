@@ -179,6 +179,12 @@ async def dr(ctx, r, g, b):
             await role.delete()
 
 
+@client.command()
+@commands.has_permissions(manage_roles=True)
+async def edit():
+    pass
+
+
 class MyHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         help_embed = Embed(title="Lista de comandos e categorias", color=Color.random())
