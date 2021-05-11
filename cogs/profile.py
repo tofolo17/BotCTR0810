@@ -87,7 +87,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                 # Nickname
                 nickname_embed = Embed(
                     title="📌 Nome de jogador (1/8) 📌",
-                    description='Envie ao chat seu nome de jogador. Pode ser aquele seu nickname no lolzinho'
+                    description='Envie a este chat seu nome de jogador. Pode ser aquele seu nickname no lolzinho'
                                 ' ou um apelido que você curta. Evite envios do tipo "xxXdestroiNoivas99Xxx".'
                                 '\n\nCaso você queira usar seu nickname do Discord, responda com "0".',
                     color=Color.random()
@@ -100,6 +100,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
 
                 # Classes
                 author_info.append(
@@ -108,7 +109,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                 # Avatar
                 avatar_embed = Embed(
                     title="📷 Avatar (2/8) 📷",
-                    description='Envie ao chat a imagem (JPEG ou PNG) que será utilizada no seu perfil de jogador.'
+                    description='Envie a este chat a imagem (JPEG ou PNG) que será utilizada no seu perfil de jogador.'
                                 '\n\nCaso você queira utilizar seu avatar do Discord, responda com "0".',
                     color=Color.random()
                 )
@@ -120,11 +121,12 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
 
                 # Habilidades de classe
                 power_embed = Embed(
                     title="🥇 Poderes de classe (3/8) 🥇",
-                    description='Envie ao chat skills relacionadas a sua classe de maior '
+                    description='Envie a este chat skills relacionadas a sua classe de maior '
                                 'domínio. Se você é um(a) Programador(a) de nível Avançado, '
                                 'por exemplo, pode responder algo como: "mago(a) em C# 😎".\n\n'
                                 'Caso você não queira declarar suas maestrias, responda com "0".',
@@ -139,11 +141,12 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
 
                 # Habilidades especiais
                 specific_power_embed = Embed(
                     title="🏆 Poderes especiais (4/8) 🏆",
-                    description='Envie ao chat sua skill especial! Estas são habilidades que não são '
+                    description='Envie a este chat sua skill especial! Estas são habilidades que não são '
                                 'diretamente relacionadas a esta disciplina, mas sim, a sua trajetória! '
                                 'Se você é das Ciências Biológicas, por exemplo, pode responder algo como: '
                                 '"Sei o nome científico de todos os gorilas que ainda não foram extintos ✌🏻".\n\n'
@@ -159,11 +162,12 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
 
                 # Interesses de aprendizado
                 interests_embed = Embed(
                     title="📚 Interesses de aprendizado (5/8) 📚",
-                    description='Envie ao chat seus interesses de aprendizado, tanto '
+                    description='Envie a este chat seus interesses de aprendizado, tanto '
                                 'disciplinares, quanto gerais. Se você está interessado(a) '
                                 'em Programação, por exemplo, pode responder algo como: '
                                 '"Quanto aos games, me interesso pela criação de mapas '
@@ -180,11 +184,12 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
 
                 # Interesses temáticos
                 themes_embed = Embed(
                     title="🎲 Interesses temáticos (6/8) 🎲",
-                    description='Envie ao chat seus interesses temáticos relacionados a criação de um jogo. '
+                    description='Envie a este chat seus interesses temáticos relacionados a criação de um jogo. '
                                 'Exemplo: "quero fazer um jogo não digital de RPG com a temática Cyberpunk".'
                                 '\n\nCaso você não queira declará-los, responda com "0".',
                     color=Color.random()
@@ -198,11 +203,12 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
 
                 # Referências artísticas
                 reference_embed = Embed(
                     title="🎭 Referências artísticas (7/8) 🎭",
-                    description='Envie ao chat quaisquer referências artísticas de seu gosto. '
+                    description='Envie a este chat quaisquer referências artísticas de seu gosto. '
                                 'O desenvolvedor desse bot provavelmente teria Paramore incluído '
                                 'na resposta.\n\nCaso você possua gostos MUITO peculiares e tenha '
                                 'vergonha de apresentá-los, responda com "0".',
@@ -217,11 +223,12 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
 
                 # Redes sociais
                 social_embed = Embed(
                     title="🔎 Social (8/8) 🔎",
-                    description='Por fim, envie ao chat seu instagram/portfolio/github/link/site ou o que lhe for '
+                    description='Por fim, envie a este chat seu instagram/portfolio/github/link/site ou o que lhe for '
                                 'conveniente (não utilize @).\n\nCaso você não queira se tornar famoso(a) diante '
                                 'de nós, responda com "0".',
                     color=Color.random()
@@ -235,6 +242,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
+                    await ctx.channel.purge(check=check2)
                 await new_channel.delete()
 
                 # Card do jogador
@@ -249,6 +257,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                 player_embed_message = await ctx.send(embed=player_embed)
                 await player_embed_message.pin()
                 await ctx.channel.purge(check=check2)
+
             else:
                 await ctx.send(f"Já existe um canal para você. Dirija-se a ele.")
         else:
