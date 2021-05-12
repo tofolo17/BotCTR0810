@@ -86,7 +86,7 @@ class ReferencesEmbed(Embed):
 class SocialEmbed(Embed):
     def __init__(self):
         super().__init__(
-            title="🔎 Social 🔎",
+            title="🔎 Redes sociais 🔎",
             description='Por fim, envie a este chat seu instagram/portfolio/github/link/site ou o que lhe for '
                         'conveniente (não utilize @).\n\nCaso você não queira se tornar famoso(a) diante '
                         'de nós, responda com "0".',

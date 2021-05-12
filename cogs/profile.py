@@ -209,7 +209,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                 edit_embed.add_field(name="📚 Interesses de aprendizado 📚", value="5️⃣", inline=False)
                 edit_embed.add_field(name="🎲 Interesses temáticos 🎲", value="6️⃣", inline=False)
                 edit_embed.add_field(name="🎭 Referências artísticas 🎭", value="7️⃣", inline=False)
-                edit_embed.add_field(name="🔎 Social 🔎", value="8️⃣", inline=False)
+                edit_embed.add_field(name="🔎 Redes sociais 🔎", value="8️⃣", inline=False)
                 edit_embed.add_field(name="🔖 Atualizar classes 🔖", value="9️⃣", inline=False)
                 edit_embed.add_field(name="❌ Sair ❌", value="0️⃣", inline=False)
                 edit_embed.set_footer(text=footer_text)
@@ -240,7 +240,7 @@ class Profile(commands.Cog, name="Criação de Card"):
 
                         # Avatar
                         elif reaction.emoji == "2️⃣":
-                            discord_avatar = bool()
+                            discord_avatar = False
                             await send_embed(AvatarEmbed(), secret_channel)
                             try:
                                 avatar = await self.client.wait_for("message", check=channel_check, timeout=300)
@@ -290,7 +290,6 @@ class Profile(commands.Cog, name="Criação de Card"):
                                             field['value'] = data.content
                                             not_exists = False
                                     if not_exists:
-                                        print("a")
                                         embed_dict["fields"].append(
                                             {'name': reacted_class.title, 'value': data.content}
                                         )

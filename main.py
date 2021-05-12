@@ -2,9 +2,11 @@ import asyncio
 import os
 from random import choice, randint
 
-from discord import Game, Activity, ActivityType, Status, Intents, Embed, Color, Colour, Member
+from discord import Game, Activity, ActivityType, Status, Intents
 from discord.ext import commands
 from discord.utils import get
+
+from embeds import *
 
 intents = Intents.default()
 intents.guild_messages = True
@@ -58,6 +60,13 @@ async def on_ready():
         activity = BotStatus().get_status()
         await client.change_presence(status=Status.online, activity=activity)
         await asyncio.sleep(3000)
+
+
+@client.event
+async def on_message(message):
+    if message.content in ["!card", "!edit"]:
+        await message.delete(delay=15)
+    await client.process_commands(message)
 
 
 @client.event
@@ -118,13 +127,6 @@ async def on_raw_reaction_remove(payload=None):
             await member.remove_roles(get(guild.roles, id=839136218436075558))
 
 
-@client.event
-async def on_message(message):
-    if message.content in ["!card", "!edit"]:
-        await message.delete(delay=15)
-    await client.process_commands(message)
-
-
 # -- Estudos e testes --
 """
 @client.command()
@@ -175,10 +177,7 @@ async def resend(ctx):
         await file.save(fp)
         files.append(File(fp, filename=file.filename, spoiler=file.is_spoiler()))
     await ctx.send(files=files)
-"""
 
-
-# ----------------------
 
 @client.command()
 @commands.has_permissions(manage_roles=True)
@@ -208,6 +207,29 @@ async def dr(ctx, r, g, b):
     for role in ctx.guild.roles:
         if role.color == Colour.from_rgb(int(r), int(g), int(b)):
             await role.delete()
+
+
+@client.command()
+async def up(ctx, msg_id):
+    title_list = []
+    channel = ctx.channel
+    for embed_class in [
+        PowerEmbed(), SpecificPowerEmbed(), InterestsEmbed(),
+        ThemesEmbed(), ReferencesEmbed(), SocialEmbed()
+    ]:
+        title_list.append(embed_class.title)
+    message = await channel.fetch_message(msg_id)
+    embed_dict = message.embeds[0].to_dict()
+    for i in range(len(title_list)):
+        for j in range(len(embed_dict['fields'])):
+            if embed_dict['fields'][j]['name'] in title_list[i]:
+                embed_dict['fields'][j]['name'] = title_list[i]
+    new_embed = Embed.from_dict(embed_dict)
+    await message.edit(embed=new_embed)
+"""
+
+
+# ----------------------
 
 
 class MyHelp(commands.HelpCommand):
