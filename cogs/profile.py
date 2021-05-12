@@ -240,15 +240,20 @@ class Profile(commands.Cog, name="Criação de Card"):
 
                         # Avatar
                         elif reaction.emoji == "2️⃣":
+                            discord_avatar = bool()
                             await send_embed(AvatarEmbed(), secret_channel)
                             try:
                                 avatar = await self.client.wait_for("message", check=channel_check, timeout=300)
                             except asyncio.TimeoutError:
                                 await secret_channel.delete()
                             else:
-                                embed_dict['thumbnail']['url'] = avatar.attachments[0].url \
-                                    if avatar.content != "0" else member.avatar_url
+                                if avatar.content != "0":
+                                    embed_dict['thumbnail']['url'] = avatar.attachments[0].url
+                                else:
+                                    discord_avatar = True
                                 new_embed = Embed.from_dict(embed_dict)
+                                if discord_avatar:
+                                    new_embed.set_thumbnail(url=member.avatar_url)
                                 await message.edit(embed=new_embed)
 
                         # Atualizar classes
