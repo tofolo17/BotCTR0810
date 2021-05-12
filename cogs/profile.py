@@ -1,11 +1,13 @@
 import asyncio
 
-from discord import PermissionOverwrite, Embed, Color
+from discord import PermissionOverwrite, Embed, Color, MessageType
 from discord.ext import commands
 from discord.utils import get
 
 footer_text = "Você tem cinco minutos para responder cada pergunta e o card final não é editável. " \
               "Atente-se para não ter que recomeçar o processo."
+
+card_channel_name = "👾│cards"
 
 
 class Profile(commands.Cog, name="Criação de Card"):
@@ -61,16 +63,24 @@ class Profile(commands.Cog, name="Criação de Card"):
             return msg.author == ctx.author and msg.channel == new_channel
 
         def check2(msg):
-            return not msg.pinned
+            return msg.type == MessageType.pins_add
+
+        async def has_card():
+            messages = await ctx.channel.history(limit=None).flatten()
+            for message in messages:
+                for m in message.mentions:
+                    if m.discriminator == ctx.author.discriminator:
+                        return True
 
         guild = ctx.guild
-        if ctx.channel.name == "👾│cards":
+        channel = ctx.channel
+        if channel.name == card_channel_name:
             author_info = []
             extra_fields = {}
             member = ctx.author
-            category = ctx.channel.category
+            category = channel.category
             new_channel_name = f"👤│{member.name}{member.discriminator}"
-            if get(guild.text_channels, name=new_channel_name) is None:
+            if get(guild.text_channels, name=new_channel_name) is None and not await has_card():
                 overwrites = {
                     guild.default_role: PermissionOverwrite(read_messages=False),
                     get(guild.roles, name="Admin"): PermissionOverwrite(read_messages=True),
@@ -82,7 +92,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                     category=category,
                     overwrites=overwrites
                 )
-                await ctx.send(f"Dirija-se ao canal `{new_channel.name}` para criar seu card.")
+                await ctx.send(f"Dirija-se ao canal `{new_channel.name}` para criar seu card.", delete_after=15)
 
                 # Nickname
                 nickname_embed = Embed(
@@ -100,15 +110,11 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
-
                 await asyncio.sleep(2)
 
                 # Classes
                 author_info.append(
                     [role.mention for role in member.roles if role.name not in ["Admin", "@everyone"]])
-
-                await asyncio.sleep(2)
 
                 # Avatar
                 avatar_embed = Embed(
@@ -125,8 +131,6 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
-
                 await asyncio.sleep(2)
 
                 # Habilidades de classe
@@ -147,8 +151,6 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
-
                 await asyncio.sleep(2)
 
                 # Habilidades especiais
@@ -170,8 +172,6 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
-
                 await asyncio.sleep(2)
 
                 # Interesses de aprendizado
@@ -194,8 +194,6 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
-
                 await asyncio.sleep(2)
 
                 # Interesses temáticos
@@ -215,8 +213,6 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
-
                 await asyncio.sleep(2)
 
                 # Referências artísticas
@@ -236,8 +232,6 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
-
                 await asyncio.sleep(2)
 
                 # Redes sociais
@@ -257,9 +251,7 @@ class Profile(commands.Cog, name="Criação de Card"):
                     await new_channel.purge()
                 except asyncio.TimeoutError:
                     await new_channel.delete()
-                    await ctx.channel.purge(check=check2)
                 await new_channel.delete()
-
                 await asyncio.sleep(2)
 
                 # Card do jogador
@@ -271,17 +263,38 @@ class Profile(commands.Cog, name="Criação de Card"):
                 player_embed.set_thumbnail(url=author_info[2])
                 for k, v in extra_fields.items():
                     player_embed.add_field(name=f'{k}', value=f'{v}', inline=False)
-                player_embed_message = await ctx.send(embed=player_embed)
+                player_embed_message = await ctx.send(member.mention, embed=player_embed)
                 await player_embed_message.pin()
-                await ctx.channel.purge(check=check2)
+                await channel.purge(check=check2)
 
             else:
-                await ctx.send(f"Já existe um canal para você. Dirija-se a ele.")
+                await ctx.send(
+                    f"Das duas, uma: ou seu canal já foi criado, ou você já tem um card. Caso a "
+                    f"segunda, apague teu card atual para criar um novo. Considere editá-lo antes disso.",
+                    delete_after=15
+                )
         else:
-            card_channel_name = "👾│cards"
             await ctx.send(
-                f"Este comando só funciona no canal {get(guild.text_channels, name=card_channel_name).mention}."
+                f"Este comando só funciona no canal {get(guild.text_channels, name=card_channel_name).mention}.",
+                delete_after=15
             )
+
+    @commands.command(
+        brief="Ainda em desenvolvimento.",
+        description="Ainda em desenvolvimento. % ```!edit```"
+    )
+    async def edit(self, ctx, msg_id):
+        member = ctx.author
+        channel = ctx.channel
+        if channel.name == card_channel_name:
+            message = await channel.fetch_message(msg_id)
+            is_yours = True if member.id == message.mentions[0].id else False
+            if is_yours:
+                await ctx.send('Opa')
+            else:
+                await ctx.send('Epa')
+        else:
+            await ctx.send("Upa")
 
 
 def setup(client):

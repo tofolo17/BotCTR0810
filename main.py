@@ -1,9 +1,8 @@
 import asyncio
 import os
-from io import BytesIO
 from random import choice, randint
 
-from discord import Game, Activity, ActivityType, Status, Intents, Embed, Color, Colour, File
+from discord import Game, Activity, ActivityType, Status, Intents, Embed, Color, Colour
 from discord.ext import commands
 from discord.utils import get
 
@@ -57,7 +56,7 @@ async def on_ready():
     while True:
         activity = BotStatus().get_status()
         await client.change_presence(status=Status.online, activity=activity)
-        await asyncio.sleep(300)
+        await asyncio.sleep(3000)
 
 
 @client.event
@@ -118,7 +117,31 @@ async def on_raw_reaction_remove(payload=None):
             await member.remove_roles(get(guild.roles, id=839136218436075558))
 
 
+@client.event
+async def on_message(message):
+    if "!card" in message.content:
+        await message.delete(delay=15)
+    await client.process_commands(message)
+
+
 # -- Estudos e testes --
+"""
+@client.command()
+@commands.has_permissions(manage_roles=True)
+async def mentions(ctx):
+    messages = await ctx.channel.history(limit=None).flatten()
+    for message in messages:
+        for m in message.mentions:
+            if m.discriminator == ctx.author.discriminator:
+                await ctx.send("Canal.")
+
+
+@client.command()
+@commands.has_permissions(manage_roles=True)
+async def mention(ctx):
+    await ctx.send(ctx.author.mention)
+
+
 @client.command()
 @commands.has_permissions(manage_roles=True)
 async def join(ctx):
@@ -151,6 +174,7 @@ async def resend(ctx):
         await file.save(fp)
         files.append(File(fp, filename=file.filename, spoiler=file.is_spoiler()))
     await ctx.send(files=files)
+"""
 
 
 # ----------------------
@@ -177,12 +201,6 @@ async def dr(ctx, r, g, b):
     for role in ctx.guild.roles:
         if role.color == Colour.from_rgb(int(r), int(g), int(b)):
             await role.delete()
-
-
-@client.command()
-@commands.has_permissions(manage_roles=True)
-async def edit():
-    pass
 
 
 class MyHelp(commands.HelpCommand):
@@ -212,4 +230,4 @@ for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
         client.load_extension(f'cogs.{filename[:-3]}')
 
-client.run("ODM2NjY0MzI5NTk5MTg4OTkz.YIhSYA.1iBV5E44o5_qdud2ZfVQZ33QscU")
+client.run("ODM5NjYwMjIzMTY5MDM2Mjkw.YJM4hQ.bUcYpvAKgwATEKL2bPsxTYS4pdk")
