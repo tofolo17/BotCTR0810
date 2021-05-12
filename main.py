@@ -2,12 +2,13 @@ import asyncio
 import os
 from random import choice, randint
 
-from discord import Game, Activity, ActivityType, Status, Intents, Embed, Color, Colour
+from discord import Game, Activity, ActivityType, Status, Intents, Embed, Color, Colour, Member
 from discord.ext import commands
 from discord.utils import get
 
 intents = Intents.default()
 intents.guild_messages = True
+intents.reactions = True
 
 client = commands.Bot(command_prefix="!", intents=intents)
 
@@ -119,7 +120,7 @@ async def on_raw_reaction_remove(payload=None):
 
 @client.event
 async def on_message(message):
-    if "!card" in message.content:
+    if message.content in ["!card", "!edit"]:
         await message.delete(delay=15)
     await client.process_commands(message)
 
@@ -178,6 +179,12 @@ async def resend(ctx):
 
 
 # ----------------------
+
+@client.command()
+@commands.has_permissions(manage_roles=True)
+async def add(ctx, msg_id, member: Member):
+    message = await ctx.channel.fetch_message(msg_id)
+    await message.edit(content=member.mention, embed=message.embeds[0])
 
 
 @client.command()

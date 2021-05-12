@@ -1,13 +1,45 @@
 import asyncio
 
-from discord import PermissionOverwrite, Embed, Color, MessageType
+from discord import PermissionOverwrite
 from discord.ext import commands
 from discord.utils import get
 
-footer_text = "Você tem cinco minutos para responder cada pergunta e o card final não é editável. " \
-              "Atente-se para não ter que recomeçar o processo."
+from embeds import *
 
 card_channel_name = "👾│cards"
+footer_text = "Você tem cinco minutos para responder esta mensagem. Atente-se para não ter que recomeçar o processo."
+
+
+async def create_secret_channel(guild, category, member, channel_name):
+    overwrites = {
+        guild.default_role: PermissionOverwrite(read_messages=False),
+        get(guild.roles, name="Admin"): PermissionOverwrite(read_messages=True),
+        get(guild.roles, name="🤖  Robôs"): PermissionOverwrite(read_messages=True),
+        member: PermissionOverwrite(read_messages=True)
+    }
+    new_channel = await guild.create_text_channel(
+        name=channel_name,
+        category=category,
+        overwrites=overwrites
+    )
+    return new_channel
+
+
+async def has_card(channel, member, get_message=False):
+    messages = await channel.history(limit=None).flatten()
+    for message in messages:
+        for mention in message.mentions:
+            if mention.discriminator == member.discriminator:
+                if get_message:
+                    return message
+                else:
+                    return True
+
+
+async def send_embed(embed_class, channel):
+    avatar_embed = embed_class
+    avatar_embed.set_footer(text=footer_text)
+    await channel.send(embed=avatar_embed)
 
 
 class Profile(commands.Cog, name="Criação de Card"):
@@ -50,7 +82,7 @@ class Profile(commands.Cog, name="Criação de Card"):
             text="Obs.: seja qual for seu nível, saiba que sempre aprenderemos com o próximo. "
                  "Vamos fazer disso uma troca sincera e proveitosa."
         )
-        await ctx.message.channel.send(embed=level_embed)
+        await ctx.channel.send(embed=level_embed)
 
     @commands.command(
         brief="Cria teu perfil de jogador, baseado nas respostas que você fornecer.",
@@ -59,213 +91,74 @@ class Profile(commands.Cog, name="Criação de Card"):
                     "de jogador, disponível para os outros estudantes. % ```!card```"
     )
     async def card(self, ctx):
-        def check(msg):
-            return msg.author == ctx.author and msg.channel == new_channel
-
-        def check2(msg):
-            return msg.type == MessageType.pins_add
-
-        async def has_card():
-            messages = await ctx.channel.history(limit=None).flatten()
-            for message in messages:
-                for m in message.mentions:
-                    if m.discriminator == ctx.author.discriminator:
-                        return True
+        def channel_check(msg):
+            return msg.author == ctx.author and msg.channel == secret_channel
 
         guild = ctx.guild
         channel = ctx.channel
         if channel.name == card_channel_name:
-            author_info = []
-            extra_fields = {}
+            extra_info = {}
+            member_info = []
             member = ctx.author
             category = channel.category
-            new_channel_name = f"👤│{member.name}{member.discriminator}"
-            if get(guild.text_channels, name=new_channel_name) is None and not await has_card():
-                overwrites = {
-                    guild.default_role: PermissionOverwrite(read_messages=False),
-                    get(guild.roles, name="Admin"): PermissionOverwrite(read_messages=True),
-                    get(guild.roles, name="🤖  Robôs"): PermissionOverwrite(read_messages=True),
-                    member: PermissionOverwrite(read_messages=True)
-                }
-                new_channel = await guild.create_text_channel(
-                    name=new_channel_name,
-                    category=category,
-                    overwrites=overwrites
+            secret_channel_name = f"👤│{member.name}{member.discriminator}"
+            if get(guild.text_channels, name=secret_channel_name) is None and not await has_card(channel, member):
+                secret_channel = await create_secret_channel(guild, category, member, secret_channel_name)
+                await ctx.send(f"Dirija-se ao canal `{secret_channel.name}` para criar seu card.", delete_after=15)
+
+                # Primeira mensagem
+                hello_embed = Embed(
+                    title="😎 Vamos começar! 😎",
+                    description="Para criar seu perfil de jogador, responda as próximas "
+                                "oito perguntas (todas simples e não intrusivas)."
                 )
-                await ctx.send(f"Dirija-se ao canal `{new_channel.name}` para criar seu card.", delete_after=15)
+                await secret_channel.send(embed=hello_embed)
 
                 # Nickname
-                nickname_embed = Embed(
-                    title="📌 Nome de jogador (1/8) 📌",
-                    description='Envie a este chat seu nome de jogador. Pode ser aquele seu nickname no lolzinho'
-                                ' ou um apelido que você curta. Evite envios do tipo "xxXdestroiNoivas99Xxx".'
-                                '\n\nCaso você queira usar seu nickname do Discord, responda com "0".',
-                    color=Color.random()
-                )
-                nickname_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=nickname_embed)
+                await send_embed(NicknameEmbed(), secret_channel)
                 try:
-                    nickname = await self.client.wait_for("message", check=check, timeout=300)
-                    author_info.append(nickname.content if nickname.content != "0" else member.name)
-                    await new_channel.purge()
+                    nickname = await self.client.wait_for("message", check=channel_check, timeout=300)
+                    member_info.append(nickname.content if nickname.content != "0" else member.name)
                 except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await asyncio.sleep(2)
+                    await secret_channel.delete()
 
                 # Classes
-                author_info.append(
-                    [role.mention for role in member.roles if role.name not in ["Admin", "@everyone"]])
+                member_info.append([role.mention for role in member.roles if role.name != "@everyone"])
 
                 # Avatar
-                avatar_embed = Embed(
-                    title="📷 Avatar (2/8) 📷",
-                    description='Envie a este chat a imagem (JPEG ou PNG) que será utilizada no seu perfil de jogador.'
-                                '\n\nCaso você queira utilizar seu avatar do Discord, responda com "0".',
-                    color=Color.random()
-                )
+                avatar_embed = AvatarEmbed()
                 avatar_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=avatar_embed)
+                await secret_channel.send(embed=avatar_embed)
                 try:
-                    avatar = await self.client.wait_for("message", check=check, timeout=300)
-                    author_info.append(avatar.attachments[0].url if avatar.content != "0" else member.avatar_url)
-                    await new_channel.purge()
+                    avatar = await self.client.wait_for("message", check=channel_check, timeout=300)
+                    member_info.append(avatar.attachments[0].url if avatar.content != "0" else member.avatar_url)
                 except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await asyncio.sleep(2)
+                    await secret_channel.delete()
 
-                # Habilidades de classe
-                power_embed = Embed(
-                    title="🥇 Poderes de classe (3/8) 🥇",
-                    description='Envie a este chat skills relacionadas a sua classe de maior '
-                                'domínio. Se você é um(a) Programador(a) de nível Avançado, '
-                                'por exemplo, pode responder algo como: "mago(a) em C# 😎".\n\n'
-                                'Caso você não queira declarar suas maestrias, responda com "0".',
-                    color=Color.random()
-                )
-                power_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=power_embed)
-                try:
-                    powers = await self.client.wait_for("message", check=check, timeout=300)
-                    if powers.content != "0":
-                        extra_fields["Habilidades de classe"] = powers.content
-                    await new_channel.purge()
-                except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await asyncio.sleep(2)
-
-                # Habilidades especiais
-                specific_power_embed = Embed(
-                    title="🏆 Poderes especiais (4/8) 🏆",
-                    description='Envie a este chat sua skill especial! Estas são habilidades que não são '
-                                'diretamente relacionadas a esta disciplina, mas sim, a sua trajetória! '
-                                'Se você é das Ciências Biológicas, por exemplo, pode responder algo como: '
-                                '"Sei o nome científico de todos os gorilas que ainda não foram extintos ✌🏻".\n\n'
-                                'Caso você não queira declarar suas maestrias, responda com "0".',
-                    color=Color.random()
-                )
-                specific_power_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=specific_power_embed)
-                try:
-                    specific_power = await self.client.wait_for("message", check=check, timeout=300)
-                    if specific_power.content != "0":
-                        extra_fields["Habilidades especiais"] = specific_power.content
-                    await new_channel.purge()
-                except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await asyncio.sleep(2)
-
-                # Interesses de aprendizado
-                interests_embed = Embed(
-                    title="📚 Interesses de aprendizado (5/8) 📚",
-                    description='Envie a este chat seus interesses de aprendizado, tanto '
-                                'disciplinares, quanto gerais. Se você está interessado(a) '
-                                'em Programação, por exemplo, pode responder algo como: '
-                                '"Quanto aos games, me interesso pela criação de mapas '
-                                'procedurais. Fora isso, também me amarro em IA.".\n\n'
-                                'Caso você não queira declará-los, responda com "0".',
-                    color=Color.random()
-                )
-                interests_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=interests_embed)
-                try:
-                    interest = await self.client.wait_for("message", check=check, timeout=300)
-                    if interest.content != "0":
-                        extra_fields["Interesses de aprendizado"] = interest.content
-                    await new_channel.purge()
-                except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await asyncio.sleep(2)
-
-                # Interesses temáticos
-                themes_embed = Embed(
-                    title="🎲 Interesses temáticos (6/8) 🎲",
-                    description='Envie a este chat seus interesses temáticos relacionados a criação de um jogo. '
-                                'Exemplo: "quero fazer um jogo não digital de RPG com a temática Cyberpunk".'
-                                '\n\nCaso você não queira declará-los, responda com "0".',
-                    color=Color.random()
-                )
-                themes_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=themes_embed)
-                try:
-                    theme = await self.client.wait_for("message", check=check, timeout=300)
-                    if theme.content != "0":
-                        extra_fields["Interesses temáticos"] = theme.content
-                    await new_channel.purge()
-                except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await asyncio.sleep(2)
-
-                # Referências artísticas
-                reference_embed = Embed(
-                    title="🎭 Referências artísticas (7/8) 🎭",
-                    description='Envie a este chat quaisquer referências artísticas de seu gosto. '
-                                'O desenvolvedor desse bot provavelmente teria Paramore incluído '
-                                'na resposta.\n\nCaso você não queira apresentá-los, responda com "0".',
-                    color=Color.random()
-                )
-                reference_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=reference_embed)
-                try:
-                    reference = await self.client.wait_for("message", check=check, timeout=300)
-                    if reference.content != "0":
-                        extra_fields["Referências artísticas"] = reference.content
-                    await new_channel.purge()
-                except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await asyncio.sleep(2)
-
-                # Redes sociais
-                social_embed = Embed(
-                    title="🔎 Social (8/8) 🔎",
-                    description='Por fim, envie a este chat seu instagram/portfolio/github/link/site ou o que lhe for '
-                                'conveniente (não utilize @).\n\nCaso você não queira se tornar famoso(a) diante '
-                                'de nós, responda com "0".',
-                    color=Color.random()
-                )
-                social_embed.set_footer(text=footer_text)
-                await new_channel.send(embed=social_embed)
-                try:
-                    social = await self.client.wait_for("message", check=check, timeout=300)
-                    if social.content != "0":
-                        extra_fields["Redes sociais"] = social.content
-                    await new_channel.purge()
-                except asyncio.TimeoutError:
-                    await new_channel.delete()
-                await new_channel.delete()
-                await asyncio.sleep(2)
+                for embed_class in [
+                    PowerEmbed(), SpecificPowerEmbed(), InterestsEmbed(),
+                    ThemesEmbed(), ReferencesEmbed(), SocialEmbed()
+                ]:
+                    await send_embed(embed_class, secret_channel)
+                    try:
+                        data = await self.client.wait_for("message", check=channel_check, timeout=300)
+                        if data.content != "0":
+                            extra_info[embed_class.title] = data.content
+                    except asyncio.TimeoutError:
+                        await secret_channel.delete()
+                await secret_channel.delete()
 
                 # Card do jogador
                 player_embed = Embed(
-                    title=author_info[0],
-                    description=" ".join(author_info[1]),
+                    title=member_info[0],
+                    description=" ".join(member_info[1]),
                     color=Color.random()
                 )
-                player_embed.set_thumbnail(url=author_info[2])
-                for k, v in extra_fields.items():
+                player_embed.set_thumbnail(url=member_info[2])
+                for k, v in extra_info.items():
                     player_embed.add_field(name=f'{k}', value=f'{v}', inline=False)
                 player_embed_message = await ctx.send(member.mention, embed=player_embed)
                 await player_embed_message.pin()
-                await channel.purge(check=check2)
 
             else:
                 await ctx.send(
@@ -280,21 +173,137 @@ class Profile(commands.Cog, name="Criação de Card"):
             )
 
     @commands.command(
-        brief="Ainda em desenvolvimento.",
-        description="Ainda em desenvolvimento. % ```!edit```"
+        brief="Edita teu perfil de jogador.",
+        description="Ao usá-lo, cria-se um canal privado para que você, caro jogador, atualize seu "
+                    "perfil de jogador com base nas suas novas respostas. % ```!edit```"
     )
-    async def edit(self, ctx, msg_id):
-        member = ctx.author
-        channel = ctx.channel
-        if channel.name == card_channel_name:
-            message = await channel.fetch_message(msg_id)
-            is_yours = True if member.id == message.mentions[0].id else False
-            if is_yours:
-                await ctx.send('Opa')
+    async def edit(self, ctx):
+        def reaction_check(r, m):
+            return not m.bot
+
+        def channel_check(msg):
+            return msg.author == ctx.author and msg.channel == secret_channel
+
+        guild = ctx.guild
+        cards_channel = ctx.channel
+        if cards_channel.name == card_channel_name:
+            member = ctx.author
+            category = cards_channel.category
+            new_channel_name = f"👤│{member.name}{member.discriminator}"
+            message = await has_card(cards_channel, member, get_message=True)
+            if get(guild.text_channels, name=new_channel_name) is None and message is not None:
+                secret_channel = await create_secret_channel(guild, category, member, new_channel_name)
+                await ctx.send(f"Dirija-se ao canal `{secret_channel.name}` para editar seu card.", delete_after=15)
+
+                # Interação usuário
+                edit_embed = Embed(
+                    title="😎 Bora alterar esse perfil de jogador? 😎",
+                    description="Reaja a esta mensagem para editar ou acrescentar uma "
+                                "informação de acordo com a seguinte tabela:",
+                    color=Color.random()
+                )
+                edit_embed.add_field(name="📌 Nome de jogador 📌", value="1️⃣", inline=False)
+                edit_embed.add_field(name="📷 Avatar 📷", value="2️⃣", inline=False)
+                edit_embed.add_field(name="🥇 Habilidades de classe 🥇", value="3️⃣", inline=False)
+                edit_embed.add_field(name="🏆 Habilidades especiais 🏆", value="4️⃣", inline=False)
+                edit_embed.add_field(name="📚 Interesses de aprendizado 📚", value="5️⃣", inline=False)
+                edit_embed.add_field(name="🎲 Interesses temáticos 🎲", value="6️⃣", inline=False)
+                edit_embed.add_field(name="🎭 Referências artísticas 🎭", value="7️⃣", inline=False)
+                edit_embed.add_field(name="🔎 Social 🔎", value="8️⃣", inline=False)
+                edit_embed.add_field(name="🔖 Atualizar classes 🔖", value="9️⃣", inline=False)
+                edit_embed.add_field(name="❌ Sair ❌", value="0️⃣", inline=False)
+                edit_embed.set_footer(text=footer_text)
+
+                while True:
+                    embed_dict = message.embeds[0].to_dict()
+                    edit_message = await secret_channel.send(embed=edit_embed)
+                    for emoji in ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "0️⃣"]:
+                        await edit_message.add_reaction(emoji)
+
+                    try:
+                        reaction, user = await self.client.wait_for("reaction_add", check=reaction_check, timeout=300)
+                    except asyncio.TimeoutError:
+                        await secret_channel.delete()
+                    else:
+
+                        # Nickname
+                        if reaction.emoji == "1️⃣":
+                            await send_embed(NicknameEmbed(), secret_channel)
+                            try:
+                                nickname = await self.client.wait_for("message", check=channel_check, timeout=300)
+                            except asyncio.TimeoutError:
+                                await secret_channel.delete()
+                            else:
+                                embed_dict["title"] = nickname.content if nickname.content != "0" else member.name
+                                new_embed = Embed.from_dict(embed_dict)
+                                await message.edit(embed=new_embed)
+
+                        # Avatar
+                        elif reaction.emoji == "2️⃣":
+                            await send_embed(AvatarEmbed(), secret_channel)
+                            try:
+                                avatar = await self.client.wait_for("message", check=channel_check, timeout=300)
+                            except asyncio.TimeoutError:
+                                await secret_channel.delete()
+                            else:
+                                embed_dict['thumbnail']['url'] = avatar.attachments[0].url \
+                                    if avatar.content != "0" else member.avatar_url
+                                new_embed = Embed.from_dict(embed_dict)
+                                await message.edit(embed=new_embed)
+
+                        # Atualizar classes
+                        elif reaction.emoji == "9️⃣":
+                            roles = [role.mention for role in member.roles if role.name != "@everyone"]
+                            embed_dict['description'] = " ".join(roles)
+                            new_embed = Embed.from_dict(embed_dict)
+                            await message.edit(embed=new_embed)
+
+                        # Sair
+                        elif reaction.emoji == "0️⃣":
+                            await secret_channel.delete()
+
+                        # Fields
+                        for field_emoji in [
+                            ["3️⃣", PowerEmbed()],
+                            ["4️⃣", SpecificPowerEmbed()],
+                            ["5️⃣", InterestsEmbed()],
+                            ["6️⃣", ThemesEmbed()],
+                            ["7️⃣", ReferencesEmbed()],
+                            ["8️⃣", SocialEmbed()]
+                        ]:
+                            if reaction.emoji == field_emoji[0]:
+                                reacted_class = field_emoji[1]
+                                await send_embed(reacted_class, secret_channel)
+                                try:
+                                    data = await self.client.wait_for("message", check=channel_check, timeout=300)
+                                except asyncio.TimeoutError:
+                                    await secret_channel.delete()
+                                else:
+                                    not_exists = True
+                                    for field in embed_dict["fields"]:
+                                        if field['name'] == reacted_class.title:
+                                            field['value'] = data.content
+                                            not_exists = False
+                                    if not_exists:
+                                        print("a")
+                                        embed_dict["fields"].append(
+                                            {'name': reacted_class.title, 'value': data.content}
+                                        )
+                                new_embed = Embed.from_dict(embed_dict)
+                                await message.edit(embed=new_embed)
+
+                        await secret_channel.send("Tudo feito.")
+
             else:
-                await ctx.send('Epa')
+                await ctx.send(
+                    f"Das duas, uma: ou seu canal já foi criado, ou você não possui um card para editar.",
+                    delete_after=15
+                )
         else:
-            await ctx.send("Upa")
+            await ctx.send(
+                f"Este comando só funciona no canal {get(guild.text_channels, name=card_channel_name).mention}.",
+                delete_after=15
+            )
 
 
 def setup(client):
