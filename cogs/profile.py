@@ -7,8 +7,8 @@ from discord.utils import get
 from embeds import *
 
 card_channel_name = "👾│cards"
-footer_text = "Pode ser que, durante o processo, o bot trave. Caso isso aconteça, contate o administrador para que " \
-              "ele apague o canal e possibilite o reinício da criação do card."
+footer_text = "Pode ser que, durante o processo, o bot trave. " \
+              "Caso isso aconteça, use o comando !leave para apagar o canal atual e reiniciar o processo."
 
 
 async def create_secret_channel(guild, category, member, channel_name):
@@ -298,6 +298,17 @@ class Profile(commands.Cog, name="Criação de Card"):
                 f"Este comando só funciona no canal {get(guild.text_channels, name=card_channel_name).mention}.",
                 delete_after=15
             )
+
+    @commands.command(
+        brief="Apaga o canal de edição ou criação de cards.",
+        description="Apaga o canal de edição ou criação de cards. Útil caso o bot trave. % ```!leave```"
+    )
+    async def leave(self, ctx):
+        member = ctx.author
+        channel = ctx.channel
+        secret_channel_name = f"👤│{member.name}{member.discriminator}"
+        if channel.name == secret_channel_name:
+            await channel.delete()
 
 
 def setup(client):
