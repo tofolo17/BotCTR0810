@@ -7,7 +7,8 @@ from discord.utils import get
 from embeds import *
 
 card_channel_name = "👾│cards"
-footer_text = "Você tem cinco minutos para responder esta mensagem. Atente-se para não ter que recomeçar o processo."
+footer_text = "Pode ser que, durante o processo, o bot trave. Caso isso aconteça, contate o administrador para que " \
+              "ele apague o canal e possibilite o reinício da criação do card."
 
 
 async def create_secret_channel(guild, category, member, channel_name):
@@ -116,36 +117,25 @@ class Profile(commands.Cog, name="Criação de Card"):
 
                 # Nickname
                 await send_embed(NicknameEmbed(), secret_channel)
-                try:
-                    nickname = await self.client.wait_for("message", check=channel_check, timeout=300)
-                    member_info.append(nickname.content if nickname.content != "0" else member.name)
-                except asyncio.TimeoutError:
-                    await secret_channel.delete()
+                nickname = await self.client.wait_for("message", check=channel_check)
+                member_info.append(nickname.content if nickname.content != "0" else member.name)
 
                 # Classes
                 member_info.append([role.mention for role in member.roles if role.name != "@everyone"])
 
                 # Avatar
-                avatar_embed = AvatarEmbed()
-                avatar_embed.set_footer(text=footer_text)
-                await secret_channel.send(embed=avatar_embed)
-                try:
-                    avatar = await self.client.wait_for("message", check=channel_check, timeout=300)
-                    member_info.append(avatar.attachments[0].url if avatar.content != "0" else member.avatar_url)
-                except asyncio.TimeoutError:
-                    await secret_channel.delete()
+                await send_embed(AvatarEmbed(), secret_channel)
+                avatar = await self.client.wait_for("message", check=channel_check)
+                member_info.append(avatar.attachments[0].url if avatar.content != "0" else member.avatar_url)
 
                 for embed_class in [
                     PowerEmbed(), SpecificPowerEmbed(), InterestsEmbed(),
                     ThemesEmbed(), ReferencesEmbed(), SocialEmbed()
                 ]:
                     await send_embed(embed_class, secret_channel)
-                    try:
-                        data = await self.client.wait_for("message", check=channel_check, timeout=300)
-                        if data.content != "0":
-                            extra_info[embed_class.title] = data.content
-                    except asyncio.TimeoutError:
-                        await secret_channel.delete()
+                    data = await self.client.wait_for("message", check=channel_check)
+                    if data.content != "0":
+                        extra_info[embed_class.title] = data.content
                 await secret_channel.delete()
 
                 # Card do jogador
