@@ -102,7 +102,7 @@ class Profile(commands.Cog, name="Criação de Card"):
             member_info = []
             member = ctx.author
             category = channel.category
-            secret_channel_name = f"👤│{member.name}{member.discriminator}"
+            secret_channel_name = f"👤│{member.id}"
             if get(guild.text_channels, name=secret_channel_name) is None and not await has_card(channel, member):
                 secret_channel = await create_secret_channel(guild, category, member, secret_channel_name)
                 await ctx.send(f"Dirija-se ao canal `{secret_channel.name}` para criar seu card.", delete_after=15)
@@ -179,7 +179,7 @@ class Profile(commands.Cog, name="Criação de Card"):
         if cards_channel.name == card_channel_name:
             member = ctx.author
             category = cards_channel.category
-            new_channel_name = f"👤│{member.name}{member.discriminator}"
+            new_channel_name = f"👤│{member.id}"
             message = await has_card(cards_channel, member, get_message=True)
             if get(guild.text_channels, name=new_channel_name) is None and message is not None:
                 secret_channel = await create_secret_channel(guild, category, member, new_channel_name)
@@ -306,7 +306,7 @@ class Profile(commands.Cog, name="Criação de Card"):
     async def leave(self, ctx):
         member = ctx.author
         channel = ctx.channel
-        secret_channel_name = f"👤│{member.name}{member.discriminator}"
+        secret_channel_name = f"👤│{member.id}"
         if channel.name == secret_channel_name:
             await channel.delete()
 
