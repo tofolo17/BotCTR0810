@@ -1,4 +1,9 @@
 # BotCTR0810
 
-Discord Bot (em desenvolvimento) responsável pela criação de perfis pessoais e simples gamificação do servidor da
-disciplina CTR0810, turma 101-2021, ministrada pelo professor Gilson Schwartz.
+## What will you find in this repository?
+
+Bot responsible for creating personal profiles and gamifying the discord server of discipline CTR0810, class 101-2021, applied by professor Gilson Schwartz.
+
+## O que você encontrará neste repositório?
+
+Bot responsável por criar perfis pessoais e gamificar o servidor discord da disciplina CTR0810, turma 101-2021, ministrada pelo professor Gilson Schwartz.
