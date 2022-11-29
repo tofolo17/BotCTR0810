@@ -28,15 +28,15 @@ _Now, we define the "classes"!_
 
 ![image](https://user-images.githubusercontent.com/56842352/204560449-f0cd7f0b-d9af-4ef0-80e5-69e002d5e72f.png)
 
-Após a seleção de ao menos uma classe, é possível, por meio de um canal até então secreto, criar seu "card de jogador". Nele, você se apresenta como se fosse o personagem de um game.
+Após a seleção de ao menos uma classe, é possível criar seu "card de jogador". Nele, você se apresenta como se fosse o personagem de um game.
 
 _After selecting at least one class, it is possible to create your "gamer card". In it, you present yourself as if you were a character in a game._
 
 ![image](https://user-images.githubusercontent.com/56842352/204560891-107780b7-e84f-4091-9113-b87376245cd6.png)
 
-Todas as atualizações do bot eram anunciadas publicamente, através de um hook. Veja também, a organização do servidor.
+Todas as atualizações do bot eram anunciadas publicamente através de um hook. Veja também, a organização do servidor.
 
-_All bot updates were announced publicly, via a hook. Check the server organization._
+_All bot updates were announced publicly via a hook. Check the server organization._
 
 ![image](https://user-images.githubusercontent.com/56842352/204561289-08a88870-95b9-47a5-8fcd-037a38ea0d5f.png)
 
