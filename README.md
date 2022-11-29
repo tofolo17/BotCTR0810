@@ -1,10 +1,10 @@
 ## O que você encontrará neste repositório?
 
-Um Discord Bot responsável pela criação de perfis pessoais e gamificação do servidor da disciplina [CTR0810](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=CTR0810), turma 101-2021, ministrada pelo professor [Gilson Schwartz](https://pt.wikipedia.org/wiki/Gilson_Schwartz).
+Um bot Discord responsável pela criação de perfis pessoais e gamificação do servidor da disciplina [CTR0810](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=CTR0810), turma 101-2021, ministrada pelo professor [Gilson Schwartz](https://pt.wikipedia.org/wiki/Gilson_Schwartz).
 
 ## What will you find in this repository?
 
-A Discord Bot responsible for creating personal profiles and server gamification for the course [CTR0810](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=CTR0810), class 101-2021, taught by professor [Gilson Schwartz](https://pt.wikipedia.org/wiki/Gilson_Schwartz).
+A Discord bot responsible for creating personal profiles and server gamification for the course [CTR0810](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=CTR0810), class 101-2021, taught by professor [Gilson Schwartz](https://pt.wikipedia.org/wiki/Gilson_Schwartz).
 
 ***
 
