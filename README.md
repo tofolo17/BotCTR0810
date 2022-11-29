@@ -18,7 +18,7 @@ _Help message with all the bot commands. Each command has a specific output._
 
 Seção de atribuição de classes. É como se fosse um RPG: cada "jogador" tem suas "classes", com níveis de "força" diferentes. Aqui, indicamos estes níveis.
 
-_Class assignment section. It is like an RPG, each "player" has his "classes", with different "strength" levels. Here, we indicate these levels._
+_Class assignment section. It is like an RPG, each "player" has its "classes", with different "strength" levels. Here, we indicate these levels._
 
 ![image](https://user-images.githubusercontent.com/56842352/204560297-399204d8-3076-4133-9e4c-caa56817bebd.png)
 
